@@ -1,4 +1,4 @@
-package frsf.isi.dam.obrapprest.dao.rest;
+package frsf.isi.dam.obrapprest.dao;
 
 import java.util.List;
 

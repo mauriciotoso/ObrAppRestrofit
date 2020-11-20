@@ -21,13 +21,11 @@ import frsf.isi.dam.obrapprest.modelo.Obra;
 import frsf.isi.dam.obrapprest.dao.ObraRepository;
 
 public class ObraListActivity extends AppCompatActivity {
+
     List<Obra>  listaDataSet;
     ListView lvObras;
     TextView obraSeleccionada;
-    Button btnMenu;
-    Button btnAdd;
-    Button btnBorrarObra;
-    Button btnEditarObra;
+    Button btnMenu,btnAdd,btnBorrarObra,btnEditarObra;
     ArrayAdapter<Obra> adapter;
     Obra currentObra;
     int indiceCurrentObra=-1;
@@ -36,36 +34,36 @@ public class ObraListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_obra_list);
+
         lvObras = (ListView) findViewById(R.id.listaObras);
         obraSeleccionada = (TextView) findViewById(R.id.obraSeleccionada);
         btnEditarObra = (Button) findViewById(R.id.btnEditarObra);
-        btnEditarObra .setEnabled(false);
         btnMenu = (Button) findViewById(R.id.btnObraMenuPpal);
         btnAdd = (Button) findViewById(R.id.btnAddObra);
         btnBorrarObra = (Button) findViewById(R.id.btnBorrarObra);
+
+        btnEditarObra .setEnabled(false);
         btnBorrarObra.setEnabled(false);
+
+        ObraRepository.getInstance().listarObra(miHandler);
+
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(ObraListActivity.this,ObraActivity.class);
-                startActivity(i);            }
+                startActivity(i);
+            }
         });
 
-        btnMenu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(ObraListActivity.this,MainActivity.class);
-                startActivity(i);            }
-        });
         btnBorrarObra.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 btnBorrarObra.setEnabled(false);
                 btnEditarObra.setEnabled(false);
                 ObraRepository.getInstance().borrarObra(currentObra,miHandler);
-
             }
         });
+
         btnEditarObra.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -76,7 +74,6 @@ public class ObraListActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
-        ObraRepository.getInstance().listarObra(miHandler);
 
         lvObras.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -88,23 +85,35 @@ public class ObraListActivity extends AppCompatActivity {
                 btnEditarObra.setEnabled(true);
             }
         });
+
+        btnMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(ObraListActivity.this,MainActivity.class);
+                startActivity(i);
+            }
+        });
     }
 
     Handler miHandler = new Handler(Looper.myLooper()){
         @Override
         public void handleMessage(Message msg) {
             listaDataSet = ObraRepository.getInstance().getListaObras();
+
             switch (msg.arg1 ){
                 case ObraRepository._CONSULTA_OBRA:
+
                     adapter = new ArrayAdapter<>(ObraListActivity.this,android.R.layout.simple_list_item_single_choice,listaDataSet );
                     lvObras.setAdapter(adapter);
+
                     break;
                 case ObraRepository._BORRADO_OBRA:
+
                     lvObras.clearChoices();
                     btnBorrarObra.setEnabled(false);
                     adapter.notifyDataSetChanged();
-                    break;
 
+                    break;
             }
         }
     };

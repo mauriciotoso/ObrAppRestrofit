@@ -5,11 +5,9 @@ import android.os.Message;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+
 import frsf.isi.dam.obrapprest.modelo.Obra;
-import frsf.isi.dam.obrapprest.dao.rest.ObraRest;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -28,6 +26,8 @@ public class ObraRepository {
     public static final int _ERROR_OBRA =9;
 
     private static ObraRepository _INSTANCE;
+    private Retrofit rf;
+    private ObraRest obraRest;
 
     private ObraRepository(){}
 
@@ -40,13 +40,9 @@ public class ObraRepository {
         return _INSTANCE;
     }
 
-    private Retrofit rf;
-
-    private ObraRest obraRest;
-
     private void configurarRetrofit(){
         this.rf = new Retrofit.Builder()
-                .baseUrl("http://10.0.2.2:5000/")
+                .baseUrl(_SERVER)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         Log.d("APP_2","INSTANCIA CREADA");
@@ -57,10 +53,12 @@ public class ObraRepository {
     public void actualizarObra(final Obra o, final Handler h){
         Call<Obra> llamada = this.obraRest.actualizar(o.getId(),o);
         llamada.enqueue(new Callback<Obra>() {
+
             @Override
             public void onResponse(Call<Obra> call, Response<Obra> response) {
+
                 Log.d("APP_2","Despues que ejecuta"+ response.isSuccessful());
-                Log.d("APP_2","COdigo"+ response.code());
+                Log.d("APP_2","Codigo"+ response.code());
 
                 if(response.isSuccessful()){
                     Log.d("APP_2","EJECUTO");
@@ -165,6 +163,7 @@ public class ObraRepository {
             }
         });
     }
+
     public List<Obra> getListaObras() {
         return listaObras;
     }
